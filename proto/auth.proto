@@ -1,0 +1,14 @@
+syntax = "proto3";
+option go_package = "go_auth/proto";
+
+service Auth {
+    rpc Register (RegisterRequest) returns (RegisterResponse);
+    rpc Login (LoginRequest) returns (LoginResponse);
+    rpc Logout (LogoutRequest) returns (LogoutResponse);
+    rpc Protected (ProtectedRequest) returns (ProtectedResponse);
+}
+
+message RegisterRequest {
+    string username = 1;
+    string password = 2;
+}
