@@ -12,3 +12,35 @@ message RegisterRequest {
     string username = 1;
     string password = 2;
 }
+
+message RegisterResponse {
+    string message = 1;
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+// session token and csrf token returned in response metadata
+message LoginResponse {
+    string message = 1;
+}
+
+message LogoutRequest {
+    string username = 1;
+}
+
+// session token and csrf token returned in response metadata
+message LogoutResponse {
+    string message = 1;
+}
+
+message ProtectedRequest {
+    string username = 1;
+}
+
+// session token and csrf token returned in response metadata
+message ProtectedResponse {
+    string message = 1;
+}

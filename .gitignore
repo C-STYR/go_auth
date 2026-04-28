@@ -1,0 +1,12 @@
+# Build output
+go_auth
+
+# SQLite database
+*.db
+*.sqlite
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
