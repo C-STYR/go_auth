@@ -7,6 +7,16 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+type Login struct {
+	HashedPassword string
+	SessionToken   string
+	CSRFToken      string
+}
+
+type Store struct {
+	db *sql.DB
+}
+
 func initDB() *sql.DB {
 	db, err := sql.Open("sqlite", "auth.db")
 	if err != nil {
@@ -24,4 +34,52 @@ func initDB() *sql.DB {
 	}
 
 	return db
+}
+
+// WRITES
+func (s *Store) createUser(username, hashedPassword string) error {
+	_, err := s.db.Exec(
+		"INSERT INTO users (username, hashed_password) values (?, ?)",
+		username, hashedPassword,
+	)
+	return err
+}
+
+func (s *Store) updateTokens(username, sessionToken, csrfToken string) error {
+	_, err := s.db.Exec(
+		"UPDATE users SET session_token = ?, csrf_token = ? WHERE username = ?",
+		sessionToken, csrfToken, username,
+	)
+	return err
+}
+
+func (s *Store) clearTokens(username string) error {
+	_, err := s.db.Exec(
+		"UPDATE users SET session_token = '', csrf_token = '' WHERE username = ?",
+		username,
+	)
+	return err
+}
+
+// READS
+func (s *Store) getUser(username string) (Login, error) {
+	var user Login
+	row := s.db.QueryRow(
+		"SELECT hashed_password, session_token, csrf_token FROM users WHERE username = ?",
+		username)
+
+	err := row.Scan(&user.HashedPassword, &user.SessionToken, &user.CSRFToken)
+	if err != nil {
+		return Login{}, err
+	}
+
+	return user, nil
+}
+
+func (s *Store) userExists(username string) bool {
+	var count int
+	row := s.db.QueryRow("SELECT COUNT(*) FROM users WHERE username = ?", username)
+	row.Scan(&count)
+
+	return count > 0
 }
